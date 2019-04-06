@@ -1,0 +1,116 @@
+﻿<Window x:Class="AocWikiTranslationHelper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:AocWikiTranslationHelper.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="Wiki Text Stripper"
+        MinWidth="600"
+        MinHeight="900"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0"
+                  Header="Text Input and Output">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="100"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*" MinWidth="100"/>
+                </Grid.ColumnDefinitions>
+                <!-- TODO: RichTextBox -->
+                <TextBox Grid.Column="0"
+                         AcceptsReturn="True"
+                         Text="{Binding TextInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <GridSplitter Grid.Column="1"
+                              ResizeDirection="Columns"
+                              ResizeBehavior="PreviousAndNext"
+                              HorizontalAlignment="Stretch"/>
+                <TextBox Grid.Column="2"
+                         AcceptsReturn="True"
+                         Text="{Binding TextOutput, Mode=OneWay}"
+                         IsReadOnly="True"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1"
+                  Header="Actions"
+                  HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Parse Input"
+                        Command="{Binding ParseInputCommand, Mode=OneWay}"/>
+                <Button Content="Build Output"
+                        Command="{Binding BuildOutputCommand, Mode=OneWay}"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Row="2"
+                  Header="Parsed Texts">
+            <DataGrid ItemsSource="{Binding ParsedContents, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      AutoGenerateColumns="False"
+                      SelectionMode="Single"
+                      ClipboardCopyMode="None">
+                <i:Interaction.Triggers>
+                    <i:KeyTrigger ActiveOnFocus="True"
+                                  FiredOn="KeyUp"
+                                  Key="C"
+                                  Modifiers="Control">
+                        <i:InvokeCommandAction Command="{Binding CopyToClipboardCommand}"/>
+                    </i:KeyTrigger>
+                </i:Interaction.Triggers>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Links in source"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource DataGridTextColumnCenteredStyle}">
+                        <DataGridTextColumn.Binding>
+                            <MultiBinding Converter="{StaticResource NumberOfLinksToTextConverter}">
+                                <Binding Path="Text"/>
+                                <Binding Path="NumberOfLinksInSource"/>
+                            </MultiBinding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Links in translation"
+                                            IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource NumberOfLinksToTextConverter}">
+                                            <Binding Path="Text"/>
+                                            <Binding Path="NumberOfLinksInTranslation"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                    <TextBlock.Foreground>
+                                        <MultiBinding Converter="{StaticResource NumberOfLinksToNotificationConverter}">
+                                            <Binding Path="NumberOfLinksInSource"/>
+                                            <Binding Path="NumberOfLinksInTranslation"/>
+                                        </MultiBinding>
+                                    </TextBlock.Foreground>
+                                    <TextBlock.FontWeight>
+                                        <MultiBinding Converter="{StaticResource NumberOfLinksToNotificationConverter}">
+                                            <Binding Path="NumberOfLinksInSource"/>
+                                            <Binding Path="NumberOfLinksInTranslation"/>
+                                        </MultiBinding>
+                                    </TextBlock.FontWeight>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Edit (double-click) to translate"
+                                        Binding="{Binding Text}"/>
+                    <DataGridTextColumn Header="Reference"
+                                        Binding="{Binding Reference}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</Window>
