@@ -29,6 +29,8 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Properties
 
+        public event EventHandler<HighlightOriginTextEventArgs> HighlightOriginText;
+
         public string TextInput
         {
             get => _textInput;
@@ -59,6 +61,7 @@
                 if (value == _selectedContent) return;
                 _selectedContent = value;
                 RaisePropertyChanged();
+                HighlightOriginText?.Invoke(this, new HighlightOriginTextEventArgs(value));
             }
         }
 
@@ -95,9 +98,13 @@
         {
             ParsedContents.Clear();
             TextOutput = string.Empty;
-            var autoLocalized = _autoLocalizer.Localize(TextInput);
-            var doc = _currentDocument = _textParser.ParseText(autoLocalized);
-            foreach (var s in doc.Content.Where(m => m.Value != null)) ParsedContents.Add(s.Value);
+            var doc = _currentDocument = _textParser.ParseText(TextInput);
+            foreach (var s in doc.Content.Where(m => m.Value != null))
+            {
+                if (s.Value.Text != null) s.Value.Text = _autoLocalizer.Localize(s.Value.Text);
+                if (s.Value.Reference != null) s.Value.Reference = _autoLocalizer.Localize(s.Value.Reference);
+                ParsedContents.Add(s.Value);
+            }
         }
 
         private bool BuildOutput_CanExecute() => !string.IsNullOrWhiteSpace(TextInput) && ParsedContents.Count > 0 && ParsedContents.All(m => m.NumberOfLinksInSource == m.NumberOfLinksInTranslation);

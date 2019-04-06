@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:AocWikiTranslationHelper.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:bll="clr-namespace:AocWikiTranslationHelper.BLL"
         mc:Ignorable="d"
         Title="Wiki Text Stripper"
         MinWidth="600"
@@ -12,6 +14,10 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
         d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
+
+    <Window.Resources>
+        <bll:RawTextFormatter x:Key="RawTextFormatter"/>
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -28,10 +34,18 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*" MinWidth="100"/>
                 </Grid.ColumnDefinitions>
-                <!-- TODO: RichTextBox -->
-                <TextBox Grid.Column="0"
-                         AcceptsReturn="True"
-                         Text="{Binding TextInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <xctk:RichTextBox Grid.Column="0"
+                                  x:Name="TextInputRtb"
+                                  AcceptsReturn="True"
+                                  Text="{Binding TextInput, UpdateSourceTrigger=PropertyChanged}"
+                                  TextFormatter="{StaticResource RawTextFormatter}"
+                                  SpellCheck.IsEnabled="False">
+                    <xctk:RichTextBox.Resources>
+                        <Style TargetType="Paragraph">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </xctk:RichTextBox.Resources>
+                </xctk:RichTextBox>
                 <GridSplitter Grid.Column="1"
                               ResizeDirection="Columns"
                               ResizeBehavior="PreviousAndNext"

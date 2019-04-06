@@ -45,9 +45,9 @@
         }
 
         private static bool IsReference(string text) =>
-            text.StartsWith("web")
-            || text.StartsWith("livestream")
-            || text.StartsWith("interview");
+            text.StartsWith("web|")
+            || text.StartsWith("livestream|")
+            || text.StartsWith("interview|");
 
         #endregion
 
