@@ -13,6 +13,8 @@
         private string _text;
         private string _reference;
 
+        public int OriginalOffset { get; }
+
         public string Original { get; }
 
         public int NumberOfLinksInSource { get; }
@@ -51,20 +53,24 @@
             }
         }
 
-        public ParsedText(string original,
+        public ParsedText(int originalOffset,
+                          string original,
                           int numberOfLinksInSource,
                           string text,
                           ITextParser textParser)
         {
             _textParser = textParser;
+            OriginalOffset = originalOffset;
             Original = original;
             NumberOfLinksInSource = numberOfLinksInSource;
             Text = text;
         }
 
-        public ParsedText(string original,
+        public ParsedText(int originalOffset,
+                          string original,
                           string reference)
         {
+            OriginalOffset = originalOffset;
             Original = original;
             Reference = reference;
         }

@@ -57,19 +57,27 @@
         ParsedDocument ITextParser.ParseText(string textInput)
         {
             var splits = textInput.SplitAndKeep(Environment.NewLine)
-                                           .SelectMany(m => m.SplitAndKeep("{{"))
-                                           .SelectMany(m => m.SplitAndKeep("}}"))
-                                           .ToArray();
+                                  .SelectMany(m => m.SplitAndKeep("{{"))
+                                  .SelectMany(m => m.SplitAndKeep("}}"))
+                                  .ToArray();
 
             var doc = new ParsedDocument();
+            var offset = 0;
 
             foreach (var split in splits)
             {
-                if (string.IsNullOrWhiteSpace(split)
-                    || split == string.Empty
-                    || split == "{{"
+                if (split == null)
+                    continue;
+                if (split == "{{"
                     || split == "}}")
                 {
+                    offset += split.Length + 2;
+                    doc.Content.Add((split, null));
+                }
+                else if (string.IsNullOrWhiteSpace(split)
+                         || split == string.Empty)
+                {
+                    offset += split.Length;
                     doc.Content.Add((split, null));
                 }
                 else
@@ -77,13 +85,15 @@
                     var isReference = IsReference(split);
                     if (isReference)
                     {
-                        doc.Content.Add((null, new ParsedText(split, split)));
+                        doc.Content.Add((null, new ParsedText(offset, split, split)));
                     }
                     else
                     {
                         var (textWithoutLinks, numberOfLinks) = ReplaceSimpleLinks(split);
-                        doc.Content.Add((null, new ParsedText(split, numberOfLinks, textWithoutLinks, this)));
+                        doc.Content.Add((null, new ParsedText(offset, split, numberOfLinks, textWithoutLinks, this)));
                     }
+
+                    offset += split.Length;
                 }
             }
 
