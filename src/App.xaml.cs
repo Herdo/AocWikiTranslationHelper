@@ -2,6 +2,7 @@
 {
     using BLL;
     using Contracts;
+    using DAL;
     using Unity;
     using ViewModels;
 
@@ -37,7 +38,7 @@
             container.RegisterType<ITextParser, TextParser>();
 
             // DAL
-
+            container.RegisterType<IWikiSourcePageFetcher, WikiSourcePageFetcher>();
 
             return container;
         }

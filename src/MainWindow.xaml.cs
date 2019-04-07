@@ -1,6 +1,5 @@
 ﻿namespace AocWikiTranslationHelper
 {
-    using System;
     using System.Windows.Documents;
     using System.Windows.Media;
     using Contracts;
@@ -23,6 +22,8 @@
             // Calculate positions
             var startPosition = TextInputRtb.Document.ContentStart.GetPositionAtOffset(e.ParsedText.OriginalOffset);
             var endPosition = TextInputRtb.Document.ContentStart.GetPositionAtOffset(e.ParsedText.OriginalOffset + e.ParsedText.Original.Length);
+            if (startPosition == null || endPosition == null)
+                return;
 
             // Highlight area
             var searchTextRange = new TextRange(startPosition, endPosition);

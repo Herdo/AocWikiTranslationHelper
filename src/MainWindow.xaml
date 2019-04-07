@@ -21,12 +21,31 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <GroupBox Grid.Row="0"
+                  Header="Fetch from URL">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="500"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0"
+                         Text="{Binding SourcePageUrl, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Stretch"
+                         VerticalContentAlignment="Center"
+                         Margin="0,5"/>
+                <Button Grid.Column="1"
+                        Content="Fetch"
+                        Command="{Binding FetchSourcePageCommand}"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1"
                   Header="Text Input and Output">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -57,7 +76,7 @@
                          IsReadOnly="True"/>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="1"
+        <GroupBox Grid.Row="2"
                   Header="Actions"
                   HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
@@ -67,7 +86,7 @@
                         Command="{Binding BuildOutputCommand, Mode=OneWay}"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox Grid.Row="2"
+        <GroupBox Grid.Row="3"
                   Header="Parsed Texts">
             <DataGrid ItemsSource="{Binding ParsedContents, Mode=OneWay}"
                       SelectedItem="{Binding SelectedContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

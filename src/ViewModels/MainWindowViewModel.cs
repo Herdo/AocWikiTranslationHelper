@@ -16,6 +16,7 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Fields
 
+        private readonly IWikiSourcePageFetcher _sourcePageFetcher;
         private readonly IAutoLocalizer _autoLocalizer;
         private readonly ITextParser _textParser;
 
@@ -23,6 +24,7 @@
         private string _textOutput;
         private ParsedDocument _currentDocument;
         private ParsedText _selectedContent;
+        private string _sourcePageUrl;
 
         #endregion
 
@@ -30,6 +32,17 @@
         #region Properties
 
         public event EventHandler<HighlightOriginTextEventArgs> HighlightOriginText;
+
+        public string SourcePageUrl
+        {
+            get => _sourcePageUrl;
+            set
+            {
+                if (value == _sourcePageUrl) return;
+                _sourcePageUrl = value;
+                RaisePropertyChanged();
+            }
+        }
 
         public string TextInput
         {
@@ -67,6 +80,7 @@
 
         public ObservableCollection<ParsedText> ParsedContents { get; }
 
+        public ICommand FetchSourcePageCommand { get; }
         public ICommand ParseInputCommand { get; }
         public ICommand BuildOutputCommand { get; }
         public ICommand CopyToClipboardCommand { get; }
@@ -76,12 +90,15 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Constructors
 
-        public MainWindowViewModel(IAutoLocalizer autoLocalizer,
+        public MainWindowViewModel(IWikiSourcePageFetcher sourcePageFetcher,
+                                   IAutoLocalizer autoLocalizer,
                                    ITextParser textParser)
         {
+            _sourcePageFetcher = sourcePageFetcher;
             _autoLocalizer = autoLocalizer;
             _textParser = textParser;
             ParsedContents = new ObservableCollection<ParsedText>();
+            FetchSourcePageCommand = new RelayCommand(FetchSourcePage_Executed, FetchSourcePage_CanExecute);
             ParseInputCommand = new RelayCommand(ParseInput_Executed, ParseInput_CanExecute);
             BuildOutputCommand = new RelayCommand(BuildOutput_Executed, BuildOutput_CanExecute);
             CopyToClipboardCommand = new RelayCommand(CopyToClipboard_Executed);
@@ -91,6 +108,17 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Private Methods
+
+        private bool FetchSourcePage_CanExecute() => !string.IsNullOrWhiteSpace(SourcePageUrl) && Uri.TryCreate(SourcePageUrl, UriKind.Absolute, out _);
+
+        private async void FetchSourcePage_Executed()
+        {
+            var uri = new Uri(SourcePageUrl, UriKind.Absolute);
+            ParsedContents.Clear();
+            TextInput = await _sourcePageFetcher.FetchSourcePage(uri);
+            // Parse automatically, if the content was fetched from the website
+            if (ParseInputCommand.CanExecute(null)) ParseInputCommand.Execute(null);
+        }
 
         private bool ParseInput_CanExecute() => !string.IsNullOrWhiteSpace(TextInput);
 

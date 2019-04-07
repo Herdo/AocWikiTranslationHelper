@@ -61,13 +61,19 @@
     <Compile Include="Contracts\IAutoLocalizer.cs" />
     <Compile Include="Contracts\IMainWindow.cs" />
     <Compile Include="Contracts\IMainWindowViewModel.cs" />
+    <Compile Include="Contracts\IWikiSourcePageFetcher.cs" />
     <Compile Include="Contracts\ITextParser.cs" />
     <Compile Include="Converters\NumberOfLinksToNotificationConverter.cs" />
     <Compile Include="Converters\NumberOfLinksToTextConverter.cs" />
+    <Compile Include="DAL\WikiSourcePageFetcher.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Models\HighlightOriginTextEventArgs.cs" />
     <Compile Include="Models\ParsedDocument.cs" />
     <Compile Include="Models\ParsedText.cs" />
+    <Compile Include="Models\WikiPage.cs" />
+    <Compile Include="Models\WikiQuery.cs" />
+    <Compile Include="Models\WikiQueryResponse.cs" />
+    <Compile Include="Models\WikiRevision.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
@@ -127,9 +133,13 @@
     <PackageReference Include="MvvmLightLibs">
       <Version>5.4.1.1</Version>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Unity">
       <Version>5.10.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
